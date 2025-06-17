@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -10,7 +9,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts';
-import { TrendingUp, Package, ShoppingCart, Users, Plus, Edit, Trash2 } from "lucide-react";
+import { TrendingUp, Package, ShoppingCart, Users, Plus, Minus, Trash2 } from "lucide-react";
 import { Product, Order } from "@/types";
 import { useToast } from "@/hooks/use-toast";
 
@@ -70,6 +69,18 @@ const AdminDashboard = ({ isOpen, onClose, products, orders }: AdminDashboardPro
       inStock: 0,
       image: ''
     });
+  };
+
+  const handleStockChange = (productId: number, change: number) => {
+    // In a real app, this would make an API call to update stock
+    const product = products.find(p => p.id === productId);
+    if (product) {
+      const newStock = Math.max(0, product.inStock + change);
+      toast({
+        title: "Stock updated",
+        description: `${product.name} stock ${change > 0 ? 'increased' : 'decreased'} to ${newStock}`,
+      });
+    }
   };
 
   const handleSizeChange = (index: number, value: string) => {
@@ -206,7 +217,7 @@ const AdminDashboard = ({ isOpen, onClose, products, orders }: AdminDashboardPro
                         id="productPrice"
                         type="number"
                         value={newProduct.price}
-                        onChange={(e) => setNewProduct({...newProduct, price: Number(e.target.value)})}
+                        onChange={(e) => setNewProduct({...newProduct, price: Number(e.target.value})}
                         placeholder="Enter price"
                       />
                     </div>
@@ -320,8 +331,22 @@ const AdminDashboard = ({ isOpen, onClose, products, orders }: AdminDashboardPro
                           <Badge variant="outline">
                             {product.inStock} in stock
                           </Badge>
-                          <Button variant="outline" size="sm">
-                            <Edit className="w-4 h-4" />
+                          <Button 
+                            variant="outline" 
+                            size="sm"
+                            onClick={() => handleStockChange(product.id, -1)}
+                            disabled={product.inStock === 0}
+                            className="text-orange-600 hover:text-orange-700"
+                          >
+                            <Minus className="w-4 h-4" />
+                          </Button>
+                          <Button 
+                            variant="outline" 
+                            size="sm"
+                            onClick={() => handleStockChange(product.id, 1)}
+                            className="text-green-600 hover:text-green-700"
+                          >
+                            <Plus className="w-4 h-4" />
                           </Button>
                           <Button variant="outline" size="sm" className="text-red-500 hover:text-red-700">
                             <Trash2 className="w-4 h-4" />
