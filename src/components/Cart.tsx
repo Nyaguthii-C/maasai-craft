@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
@@ -6,9 +5,11 @@ import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Minus, Plus, Trash2, CreditCard } from "lucide-react";
+import { Minus, Plus, Trash2, CreditCard, Smartphone } from "lucide-react";
 import { CartItem } from "@/types";
 import { useToast } from "@/hooks/use-toast";
+import { useFlutterwave, closePaymentModal } from 'flutterwave-react-v3';
+import { createFlutterwaveConfig, verifyPayment, sendPaymentNotification, PaymentData } from '@/services/flutterwaveService';
 
 interface CartProps {
   isOpen: boolean;
@@ -30,8 +31,19 @@ const Cart = ({ isOpen, onClose, items, onRemoveItem, onUpdateQuantity }: CartPr
   });
 
   const subtotal = items.reduce((total, item) => total + (item.price * item.quantity), 0);
-  const shipping = subtotal > 5000 ? 0 : 300; // Free shipping over KSh 5,000
+  const shipping = subtotal > 5000 ? 0 : 300;
   const total = subtotal + shipping;
+
+  // Flutterwave configuration
+  const paymentData: PaymentData = {
+    items,
+    total,
+    customerDetails,
+    paymentMethod: 'card' // This will be updated based on button clicked
+  };
+
+  const config = createFlutterwaveConfig(paymentData);
+  const handleFlutterPayment = useFlutterwave(config);
 
   const handleCheckout = () => {
     if (items.length === 0) {
@@ -54,23 +66,84 @@ const Cart = ({ isOpen, onClose, items, onRemoveItem, onUpdateQuantity }: CartPr
       });
       return;
     }
+
+    // Validate phone number for M-Pesa (Kenyan format)
+    const phoneRegex = /^(\+254|254|0)?[17]\d{8}$/;
+    if (!phoneRegex.test(customerDetails.phone)) {
+      toast({
+        title: "Invalid phone number",
+        description: "Please enter a valid Kenyan phone number for M-Pesa payments.",
+        variant: "destructive"
+      });
+      return;
+    }
+
     setCheckoutStep('payment');
   };
 
   const handlePayment = async (method: 'mpesa' | 'card') => {
     setIsCheckingOut(true);
-    
-    // Simulate payment processing
-    setTimeout(() => {
-      toast({
-        title: "Order placed successfully!",
-        description: `Your order has been placed. Payment method: ${method.toUpperCase()}`,
-      });
-      setIsCheckingOut(false);
-      setCheckoutStep('cart');
-      setCustomerDetails({ email: '', phone: '', name: '', address: '' });
-      onClose();
-    }, 2000);
+
+    const updatedPaymentData = { ...paymentData, paymentMethod: method };
+    const updatedConfig = createFlutterwaveConfig(updatedPaymentData);
+
+    handleFlutterPayment({
+      ...updatedConfig,
+      callback: async (response) => {
+        console.log('Payment response:', response);
+        closePaymentModal();
+
+        if (response.status === 'successful') {
+          try {
+            // Verify payment
+            const verification = await verifyPayment(response.transaction_id);
+            
+            if (verification.status === 'success' && verification.data.status === 'successful') {
+              // Send SMS notification
+              await sendPaymentNotification(
+                customerDetails.phone,
+                total,
+                response.tx_ref
+              );
+
+              toast({
+                title: "Payment Successful!",
+                description: `Your order has been placed successfully. Payment method: ${method.toUpperCase()}. You will receive an SMS confirmation shortly.`,
+              });
+
+              // Reset cart and close
+              setCheckoutStep('cart');
+              setCustomerDetails({ email: '', phone: '', name: '', address: '' });
+              onClose();
+            } else {
+              toast({
+                title: "Payment verification failed",
+                description: "Please contact support if money was deducted.",
+                variant: "destructive"
+              });
+            }
+          } catch (error) {
+            console.error('Payment verification error:', error);
+            toast({
+              title: "Payment verification error",
+              description: "Please contact support to confirm your payment status.",
+              variant: "destructive"
+            });
+          }
+        } else {
+          toast({
+            title: "Payment failed",
+            description: "Your payment was not successful. Please try again.",
+            variant: "destructive"
+          });
+        }
+        setIsCheckingOut(false);
+      },
+      onClose: () => {
+        console.log('Payment modal closed');
+        setIsCheckingOut(false);
+      },
+    });
   };
 
   const resetCart = () => {
@@ -177,9 +250,10 @@ const Cart = ({ isOpen, onClose, items, onRemoveItem, onUpdateQuantity }: CartPr
                     id="phone"
                     value={customerDetails.phone}
                     onChange={(e) => setCustomerDetails({...customerDetails, phone: e.target.value})}
-                    placeholder="Enter your phone number"
+                    placeholder="0712345678 or +254712345678"
                     className="mt-1"
                   />
+                  <p className="text-xs text-gray-500 mt-1">Required for M-Pesa payments and SMS notifications</p>
                 </div>
                 <div>
                   <Label htmlFor="address" className="text-sm">Delivery Address</Label>
@@ -206,6 +280,7 @@ const Cart = ({ isOpen, onClose, items, onRemoveItem, onUpdateQuantity }: CartPr
                   disabled={isCheckingOut}
                   className="w-full bg-green-600 hover:bg-green-700 text-white py-4 sm:py-6"
                 >
+                  <Smartphone className="w-4 h-4 mr-2" />
                   {isCheckingOut ? 'Processing...' : 'Pay with M-Pesa'}
                 </Button>
                 
@@ -220,6 +295,8 @@ const Cart = ({ isOpen, onClose, items, onRemoveItem, onUpdateQuantity }: CartPr
                 
                 <p className="text-xs sm:text-sm text-maasai-black-light text-center mt-4">
                   Secure payment powered by Flutterwave
+                  <br />
+                  You will receive SMS confirmation after successful payment
                 </p>
               </div>
             )}
