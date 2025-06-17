@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -6,14 +5,12 @@ import { Badge } from "@/components/ui/badge";
 import { ShoppingCart, Star, Heart, Menu, X } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import Cart from "@/components/Cart";
-import AdminDashboard from "@/components/AdminDashboard";
 import { Product, CartItem } from "@/types";
 
 const Index = () => {
   const { toast } = useToast();
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
   const [isCartOpen, setIsCartOpen] = useState(false);
-  const [isAdminOpen, setIsAdminOpen] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   const products: Product[] = [
@@ -89,13 +86,43 @@ const Index = () => {
     },
     {
       id: 8,
-      name: "Maasai Beaded Keychain",
+      name: "Maasai Beaded Keychain - Traditional",
       price: 400,
       image: "https://images.unsplash.com/photo-1582562124811-c09040d0a901?w=400&h=400&fit=crop",
       category: "Keychains",
       description: "Handcrafted beaded keychain with traditional patterns",
       sizes: ["One Size"],
       inStock: 50
+    },
+    {
+      id: 9,
+      name: "Maasai Warrior Shield Keychain",
+      price: 600,
+      image: "https://images.unsplash.com/photo-1582562124811-c09040d0a901?w=400&h=400&fit=crop",
+      category: "Keychains",
+      description: "Miniature warrior shield keychain with authentic Maasai patterns",
+      sizes: ["One Size"],
+      inStock: 35
+    },
+    {
+      id: 10,
+      name: "Maasai Animal Spirit Keychain Set",
+      price: 800,
+      image: "https://images.unsplash.com/photo-1582562124811-c09040d0a901?w=400&h=400&fit=crop",
+      category: "Keychains",
+      description: "Set of 3 keychains featuring lion, elephant, and buffalo designs",
+      sizes: ["One Size"],
+      inStock: 25
+    },
+    {
+      id: 11,
+      name: "Maasai Leather & Bead Keychain",
+      price: 700,
+      image: "https://images.unsplash.com/photo-1582562124811-c09040d0a901?w=400&h=400&fit=crop",
+      category: "Keychains",
+      description: "Premium leather keychain with colorful Maasai beadwork",
+      sizes: ["One Size"],
+      inStock: 40
     }
   ];
 
@@ -159,7 +186,7 @@ const Index = () => {
               <h1 className="text-2xl font-bold text-maasai-black">Maasai Craft</h1>
             </div>
             
-            {/* Desktop Navigation */}
+            {/* Desktop Navigation - removed admin button */}
             <nav className="hidden md:flex items-center space-x-8">
               <a href="#" className="text-maasai-black hover:text-maasai-gold transition-colors">Home</a>
               <a href="#products" className="text-maasai-black hover:text-maasai-gold transition-colors">Products</a>
@@ -168,14 +195,6 @@ const Index = () => {
             </nav>
             
             <div className="flex items-center space-x-4">
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => setIsAdminOpen(true)}
-                className="hidden md:flex text-maasai-black hover:text-maasai-gold"
-              >
-                Admin
-              </Button>
               <Button
                 variant="outline"
                 size="sm"
@@ -202,7 +221,7 @@ const Index = () => {
             </div>
           </div>
           
-          {/* Mobile Navigation */}
+          {/* Mobile Navigation - removed admin button */}
           {isMobileMenuOpen && (
             <nav className="md:hidden mt-4 pb-4 border-t border-gray-200 pt-4">
               <div className="flex flex-col space-y-2">
@@ -210,14 +229,6 @@ const Index = () => {
                 <a href="#products" className="text-maasai-black hover:text-maasai-gold transition-colors py-2">Products</a>
                 <a href="#about" className="text-maasai-black hover:text-maasai-gold transition-colors py-2">About</a>
                 <a href="#contact" className="text-maasai-black hover:text-maasai-gold transition-colors py-2">Contact</a>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => setIsAdminOpen(true)}
-                  className="justify-start text-maasai-black hover:text-maasai-gold p-2"
-                >
-                  Admin
-                </Button>
               </div>
             </nav>
           )}
@@ -341,14 +352,6 @@ const Index = () => {
         items={cartItems}
         onRemoveItem={removeFromCart}
         onUpdateQuantity={updateQuantity}
-      />
-
-      {/* Admin Dashboard */}
-      <AdminDashboard
-        isOpen={isAdminOpen}
-        onClose={() => setIsAdminOpen(false)}
-        products={products}
-        orders={[]} // Will be populated with real data when backend is connected
       />
     </div>
   );
