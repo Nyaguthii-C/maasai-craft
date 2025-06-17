@@ -80,66 +80,66 @@ const Cart = ({ isOpen, onClose, items, onRemoveItem, onUpdateQuantity }: CartPr
 
   return (
     <Sheet open={isOpen} onOpenChange={onClose}>
-      <SheetContent className="w-full sm:max-w-lg">
-        <SheetHeader>
-          <SheetTitle className="text-maasai-black">
+      <SheetContent className="w-full max-w-md sm:max-w-lg p-4 sm:p-6">
+        <SheetHeader className="mb-4">
+          <SheetTitle className="text-maasai-black text-lg sm:text-xl">
             {checkoutStep === 'cart' && 'Shopping Cart'}
             {checkoutStep === 'details' && 'Customer Details'}
             {checkoutStep === 'payment' && 'Payment'}
           </SheetTitle>
-          <SheetDescription>
+          <SheetDescription className="text-sm">
             {checkoutStep === 'cart' && `${items.length} item${items.length !== 1 ? 's' : ''} in your cart`}
             {checkoutStep === 'details' && 'Please provide your contact information'}
             {checkoutStep === 'payment' && 'Choose your payment method'}
           </SheetDescription>
         </SheetHeader>
 
-        <div className="flex flex-col h-full">
-          <div className="flex-1 overflow-y-auto py-6">
+        <div className="flex flex-col h-[calc(100vh-120px)] sm:h-[calc(100vh-140px)]">
+          <div className="flex-1 overflow-y-auto">
             {checkoutStep === 'cart' && (
-              <div className="space-y-4">
+              <div className="space-y-3">
                 {items.length === 0 ? (
                   <div className="text-center py-8">
                     <p className="text-maasai-black-light">Your cart is empty</p>
                   </div>
                 ) : (
                   items.map((item) => (
-                    <div key={`${item.id}-${item.selectedSize}`} className="flex items-center space-x-4 py-4">
+                    <div key={`${item.id}-${item.selectedSize}`} className="flex items-center space-x-3 py-3 border-b border-gray-100 last:border-b-0">
                       <img
                         src={item.image}
                         alt={item.name}
-                        className="w-16 h-16 object-cover rounded-md"
+                        className="w-12 h-12 sm:w-16 sm:h-16 object-cover rounded-md flex-shrink-0"
                       />
-                      <div className="flex-1">
-                        <h4 className="font-semibold text-maasai-black">{item.name}</h4>
-                        <p className="text-sm text-maasai-black-light">Size: {item.selectedSize}</p>
-                        <p className="font-semibold text-maasai-gold">KSh {item.price.toLocaleString()}</p>
+                      <div className="flex-1 min-w-0">
+                        <h4 className="font-semibold text-maasai-black text-sm sm:text-base truncate">{item.name}</h4>
+                        <p className="text-xs sm:text-sm text-maasai-black-light">Size: {item.selectedSize}</p>
+                        <p className="font-semibold text-maasai-gold text-sm sm:text-base">KSh {item.price.toLocaleString()}</p>
                       </div>
-                      <div className="flex items-center space-x-2">
+                      <div className="flex items-center space-x-1 sm:space-x-2 flex-shrink-0">
                         <Button
                           variant="outline"
                           size="sm"
                           onClick={() => onUpdateQuantity(item.id, item.selectedSize, item.quantity - 1)}
-                          className="w-8 h-8 p-0"
+                          className="w-6 h-6 sm:w-8 sm:h-8 p-0"
                         >
-                          <Minus className="w-3 h-3" />
+                          <Minus className="w-2 h-2 sm:w-3 sm:h-3" />
                         </Button>
-                        <span className="w-8 text-center font-semibold">{item.quantity}</span>
+                        <span className="w-6 sm:w-8 text-center font-semibold text-sm">{item.quantity}</span>
                         <Button
                           variant="outline"
                           size="sm"
                           onClick={() => onUpdateQuantity(item.id, item.selectedSize, item.quantity + 1)}
-                          className="w-8 h-8 p-0"
+                          className="w-6 h-6 sm:w-8 sm:h-8 p-0"
                         >
-                          <Plus className="w-3 h-3" />
+                          <Plus className="w-2 h-2 sm:w-3 sm:h-3" />
                         </Button>
                         <Button
                           variant="ghost"
                           size="sm"
                           onClick={() => onRemoveItem(item.id, item.selectedSize)}
-                          className="w-8 h-8 p-0 text-red-500 hover:text-red-700"
+                          className="w-6 h-6 sm:w-8 sm:h-8 p-0 text-red-500 hover:text-red-700"
                         >
-                          <Trash2 className="w-3 h-3" />
+                          <Trash2 className="w-2 h-2 sm:w-3 sm:h-3" />
                         </Button>
                       </div>
                     </div>
@@ -149,42 +149,46 @@ const Cart = ({ isOpen, onClose, items, onRemoveItem, onUpdateQuantity }: CartPr
             )}
 
             {checkoutStep === 'details' && (
-              <div className="space-y-4">
+              <div className="space-y-3 sm:space-y-4">
                 <div>
-                  <Label htmlFor="name">Full Name *</Label>
+                  <Label htmlFor="name" className="text-sm">Full Name *</Label>
                   <Input
                     id="name"
                     value={customerDetails.name}
                     onChange={(e) => setCustomerDetails({...customerDetails, name: e.target.value})}
                     placeholder="Enter your full name"
+                    className="mt-1"
                   />
                 </div>
                 <div>
-                  <Label htmlFor="email">Email *</Label>
+                  <Label htmlFor="email" className="text-sm">Email *</Label>
                   <Input
                     id="email"
                     type="email"
                     value={customerDetails.email}
                     onChange={(e) => setCustomerDetails({...customerDetails, email: e.target.value})}
                     placeholder="Enter your email"
+                    className="mt-1"
                   />
                 </div>
                 <div>
-                  <Label htmlFor="phone">Phone Number *</Label>
+                  <Label htmlFor="phone" className="text-sm">Phone Number *</Label>
                   <Input
                     id="phone"
                     value={customerDetails.phone}
                     onChange={(e) => setCustomerDetails({...customerDetails, phone: e.target.value})}
                     placeholder="Enter your phone number"
+                    className="mt-1"
                   />
                 </div>
                 <div>
-                  <Label htmlFor="address">Delivery Address</Label>
+                  <Label htmlFor="address" className="text-sm">Delivery Address</Label>
                   <Input
                     id="address"
                     value={customerDetails.address}
                     onChange={(e) => setCustomerDetails({...customerDetails, address: e.target.value})}
                     placeholder="Enter your delivery address"
+                    className="mt-1"
                   />
                 </div>
               </div>
@@ -192,15 +196,15 @@ const Cart = ({ isOpen, onClose, items, onRemoveItem, onUpdateQuantity }: CartPr
 
             {checkoutStep === 'payment' && (
               <div className="space-y-4">
-                <div className="text-center mb-6">
-                  <h3 className="text-lg font-semibold text-maasai-black mb-2">Choose Payment Method</h3>
-                  <p className="text-maasai-black-light">Total: KSh {total.toLocaleString()}</p>
+                <div className="text-center mb-4 sm:mb-6">
+                  <h3 className="text-base sm:text-lg font-semibold text-maasai-black mb-2">Choose Payment Method</h3>
+                  <p className="text-maasai-black-light text-sm sm:text-base">Total: KSh {total.toLocaleString()}</p>
                 </div>
                 
                 <Button
                   onClick={() => handlePayment('mpesa')}
                   disabled={isCheckingOut}
-                  className="w-full bg-green-600 hover:bg-green-700 text-white py-6"
+                  className="w-full bg-green-600 hover:bg-green-700 text-white py-4 sm:py-6"
                 >
                   {isCheckingOut ? 'Processing...' : 'Pay with M-Pesa'}
                 </Button>
@@ -208,13 +212,13 @@ const Cart = ({ isOpen, onClose, items, onRemoveItem, onUpdateQuantity }: CartPr
                 <Button
                   onClick={() => handlePayment('card')}
                   disabled={isCheckingOut}
-                  className="w-full bg-maasai-gold hover:bg-maasai-gold-dark text-maasai-white py-6"
+                  className="w-full bg-maasai-gold hover:bg-maasai-gold-dark text-maasai-white py-4 sm:py-6"
                 >
                   <CreditCard className="w-4 h-4 mr-2" />
                   {isCheckingOut ? 'Processing...' : 'Pay with Card'}
                 </Button>
                 
-                <p className="text-sm text-maasai-black-light text-center mt-4">
+                <p className="text-xs sm:text-sm text-maasai-black-light text-center mt-4">
                   Secure payment powered by Flutterwave
                 </p>
               </div>
@@ -222,7 +226,7 @@ const Cart = ({ isOpen, onClose, items, onRemoveItem, onUpdateQuantity }: CartPr
           </div>
 
           {/* Footer */}
-          <div className="border-t pt-4 space-y-4">
+          <div className="border-t pt-3 sm:pt-4 space-y-3 sm:space-y-4 mt-4 bg-white">
             {checkoutStep === 'cart' && items.length > 0 && (
               <>
                 <div className="space-y-2">
@@ -242,7 +246,7 @@ const Cart = ({ isOpen, onClose, items, onRemoveItem, onUpdateQuantity }: CartPr
                 </div>
                 <Button
                   onClick={handleCheckout}
-                  className="w-full bg-maasai-black hover:bg-maasai-black-light text-maasai-white"
+                  className="w-full bg-maasai-black hover:bg-maasai-black-light text-maasai-white py-3"
                 >
                   Checkout
                 </Button>
@@ -254,13 +258,13 @@ const Cart = ({ isOpen, onClose, items, onRemoveItem, onUpdateQuantity }: CartPr
                 <Button
                   variant="outline"
                   onClick={resetCart}
-                  className="flex-1"
+                  className="flex-1 py-3"
                 >
                   Back to Cart
                 </Button>
                 <Button
                   onClick={handleProceedToPayment}
-                  className="flex-1 bg-maasai-gold hover:bg-maasai-gold-dark text-maasai-white"
+                  className="flex-1 bg-maasai-gold hover:bg-maasai-gold-dark text-maasai-white py-3"
                 >
                   Continue
                 </Button>
@@ -271,7 +275,7 @@ const Cart = ({ isOpen, onClose, items, onRemoveItem, onUpdateQuantity }: CartPr
               <Button
                 variant="outline"
                 onClick={() => setCheckoutStep('details')}
-                className="w-full"
+                className="w-full py-3"
               >
                 Back to Details
               </Button>
