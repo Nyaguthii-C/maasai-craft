@@ -217,7 +217,7 @@ const AdminDashboard = ({ isOpen, onClose, products, orders }: AdminDashboardPro
                         id="productPrice"
                         type="number"
                         value={newProduct.price}
-                        onChange={(e) => setNewProduct({...newProduct, price: Number(e.target.value})}
+                        onChange={(e) => setNewProduct({...newProduct, price: Number(e.target.value)})}
                         placeholder="Enter price"
                       />
                     </div>
