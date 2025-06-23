@@ -417,6 +417,25 @@ const ProductCard = ({ product, onAddToCart }: { product: Product; onAddToCart: 
                 <option key={size} value={size}>{size}</option>
               ))}
             </select>
+
+            WhatsApp Chat Button
+            <a
+              href="https://wa.me/254700000000?text=Hi%20I'm%20interested%20in%20your%20products"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="fixed bottom-6 right-6 bg-green-500 hover:bg-green-600 text-white p-4 rounded-full shadow-lg z-50 transition-colors"
+              aria-label="Chat on WhatsApp"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                fill="currentColor"
+                viewBox="0 0 24 24"
+                className="w-6 h-6"
+              >
+                <path d="M20.52 3.48A11.76 11.76 0 0012.02 0C5.36 0 .07 6.21 1.36 12.71l-1.35 4.9 5.03-1.33c1.55.79 3.28 1.22 5.02 1.22 6.65 0 11.94-6.21 10.66-12.71a11.66 11.66 0 00-3.2-4.31zm-8.49 17.58c-1.6 0-3.18-.43-4.58-1.25l-.33-.2-2.98.78.8-2.9-.22-.3a9.65 9.65 0 01-1.74-5.48c0-5.29 4.31-9.6 9.61-9.6 2.56 0 4.96 1 6.76 2.81a9.56 9.56 0 012.85 6.76c.01 5.29-4.3 9.6-9.6 9.6zm5.52-7.24c-.3-.15-1.77-.87-2.04-.97-.27-.1-.47-.15-.66.15-.2.3-.76.97-.93 1.17-.17.2-.34.23-.64.08a7.9 7.9 0 01-2.33-1.44 8.6 8.6 0 01-1.6-1.99c-.17-.3-.02-.46.13-.6.13-.13.3-.34.46-.51.15-.17.2-.3.3-.5.1-.2.05-.38-.02-.54-.07-.17-.66-1.6-.9-2.19-.24-.57-.48-.5-.66-.51h-.56c-.18 0-.46.07-.7.34s-.91.89-.91 2.17c0 1.27.93 2.5 1.06 2.67.13.17 1.82 2.87 4.41 4.02 2.59 1.15 2.59.77 3.06.73.47-.04 1.5-.6 1.71-1.17.2-.57.2-1.05.15-1.17-.04-.12-.3-.2-.6-.34z" />
+              </svg>
+            </a>
+
           </div>
         )}
         
