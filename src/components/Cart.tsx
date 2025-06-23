@@ -1,4 +1,3 @@
-// Cart.tsx
 
 import { useState } from 'react';
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription } from "@/components/ui/sheet";
@@ -6,13 +5,12 @@ import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Minus, Plus, Trash2, CreditCard, Smartphone } from "lucide-react";
+import { Trash2, CreditCard, Smartphone } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { CartItem } from "@/types";
 import { useFlutterwave, closePaymentModal } from 'flutterwave-react-v3';
 import {
   createFlutterwaveConfig,
-  verifyPayment,
   sendPaymentNotification,
   PaymentData
 } from "@/services/flutterwaveService";
@@ -87,14 +85,22 @@ const Cart = ({ isOpen, onClose, items, onRemoveItem, onUpdateQuantity }: CartPr
     };
 
     const config = createFlutterwaveConfig(paymentData);
+    console.log("Flutterwave Config:", config);
     const triggerFlutterwave = useFlutterwave(config);
 
     triggerFlutterwave({
       callback: async (response) => {
         closePaymentModal();
+
         if (response.status === 'successful') {
           try {
-            const result = await verifyPayment(response.transaction_id);
+            // verifyPayment function calling Supabase edge function
+            const result = await fetch('https://vgnvqmunurawbtwvmmgt.supabase.co/functions/v1/verify-payment', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' },
+              body: JSON.stringify({ transaction_id: response.transaction_id })
+            }).then(res => res.json());
+
             if (result.status === 'success' && result.data.status === 'successful') {
               await sendPaymentNotification(customerDetails.phone, total, response.tx_ref);
               toast({
@@ -125,6 +131,7 @@ const Cart = ({ isOpen, onClose, items, onRemoveItem, onUpdateQuantity }: CartPr
             variant: "destructive"
           });
         }
+
         setIsCheckingOut(false);
       },
       onClose: () => {
@@ -138,7 +145,11 @@ const Cart = ({ isOpen, onClose, items, onRemoveItem, onUpdateQuantity }: CartPr
     <Sheet open={isOpen} onOpenChange={onClose}>
       <SheetContent>
         <SheetHeader>
-          <SheetTitle>{checkoutStep === 'cart' ? 'Cart' : checkoutStep === 'details' ? 'Customer Details' : 'Payment'}</SheetTitle>
+          <SheetTitle>
+            {checkoutStep === 'cart' ? 'Cart' :
+              checkoutStep === 'details' ? 'Customer Details' :
+                'Payment'}
+          </SheetTitle>
           <SheetDescription>
             {checkoutStep === 'cart' && `${items.length} item(s) in your cart`}
             {checkoutStep === 'details' && `Please provide your contact info`}
