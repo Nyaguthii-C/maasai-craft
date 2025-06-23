@@ -2,8 +2,8 @@
 
 import { CartItem } from '@/types';
 
-const FLUTTERWAVE_PUBLIC_KEY = 'FLWPUBK_TEST-22488b017142a844570c9b691eb18d89-X';
-const FLUTTERWAVE_SECRET_KEY = 'FLWSECK_TEST-808f93e185d3d8b919868a933b6434ff-X';
+const FLUTTERWAVE_PUBLIC_KEY = 'FLWPUBK_TEST-xxxxxxxxxxxxx-X';
+const FLUTTERWAVE_SECRET_KEY = 'FLWSECK_TEST-xxxxxxxxxxxxx-X';
 
 export interface PaymentData {
   items: CartItem[];
